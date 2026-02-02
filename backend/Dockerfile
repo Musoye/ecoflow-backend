@@ -32,6 +32,5 @@ COPY . /app/
 # 8. Expose the port the app runs on
 EXPOSE 8000
 
-# 9. Define the command to run the application
-# Note: For strict production, consider using Gunicorn. For now, this runs the dev server.
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# 9. Define the command to run the application using Gunicorn
+CMD gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 0 kazlat.wsgi:application
