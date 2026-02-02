@@ -37,14 +37,15 @@ def get_env(name: str):
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_env("DJANGO_SECRET_KEY")
+# settings.py
+GEMINI_API_KEY = get_env("GEMINI_API_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == "True"
 
 ALLOWED_HOSTS = get_env("ALLOWED_HOSTS").split(",")
 CORS_ALLOW_ALL_ORIGINS = True
-
-# AUTH_USER_MODEL = 'lims.User'
+AUTH_USER_MODEL = 'lims.User'
 
 from datetime import timedelta
 
@@ -72,6 +73,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Application definition
 
 INSTALLED_APPS = [
+
+      'lims',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -86,7 +89,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
 
     # Local apps
-    'lims',
+  
 ]
 
 MIDDLEWARE = [
