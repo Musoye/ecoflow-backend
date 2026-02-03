@@ -10,25 +10,24 @@ from ..serializers import AlertSerializer
 @permission_classes([AllowAny])  # Or AllowAny, depending on your needs
 def alert_list_create(request):
     
-    # --- GET: List all alerts ---
+# --- GET: List all alerts ---
     if request.method == 'GET':
-        # Optional: Filter by status (e.g., /api/alerts/?status=OPEN)
+        alerts = Alert.objects.all().order_by('-created_at')
+
+        # 1. Apply Status Filter if present
         status_param = request.query_params.get('status')
+        if status_param:
+            alerts = alerts.filter(status=status_param)
+
+        # 2. Apply Organization Filter if present
         org_param = request.query_params.get('org_id')
-
-        camera_filter = Camera.objects.filter(organization_id=org_param).values_list('id', flat=True) if org_param else None
-
-        if status_param and org_param:
-            alerts = Alert.objects.filter(status=status_param, camera_id__in=camera_filter).order_by('-created_at')
-        
-        elif status_param:
-            alerts = Alert.objects.filter(status=status_param).order_by('-created_at')
-        else:
-            alerts = Alert.objects.all().order_by('-created_at')
+        if org_param:
+            # Get IDs of cameras belonging to this org
+            camera_ids = Camera.objects.filter(organization_id=org_param).values_list('id', flat=True)
+            alerts = alerts.filter(camera_id__in=camera_ids)
             
         serializer = AlertSerializer(alerts, many=True)
         return Response(serializer.data)
-
     # --- POST: Create a new alert ---
     elif request.method == 'POST':
         serializer = AlertSerializer(data=request.data)
