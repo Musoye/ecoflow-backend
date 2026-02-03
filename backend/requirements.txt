@@ -10,3 +10,5 @@ typing_extensions==4.15.0
 google-generativeai==0.8.4
 Pillow==12.1.0
 gunicorn
+psycopg2-binary==2.9.10
+cloud-sql-python-connector[pg8000]==1.12.0

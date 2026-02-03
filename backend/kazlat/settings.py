@@ -45,6 +45,7 @@ DEBUG = os.getenv("DEBUG") == "True"
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_PREFLIGHT_MAX_AGE = 3600  # Cache preflight requests for 1 hour
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -156,12 +157,33 @@ WSGI_APPLICATION = 'kazlat.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Use Cloud SQL in production, SQLite for local development
+if os.getenv('USE_CLOUD_SQL') == 'True':
+    # Cloud SQL PostgreSQL Configuration
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': get_env('DB_NAME'),
+            'USER': get_env('DB_USER'),
+            'PASSWORD': get_env('DB_PASSWORD'),
+            'HOST': get_env('DB_HOST'),  # Use /cloudsql/CONNECTION_NAME for Cloud Run
+            'PORT': os.getenv('DB_PORT', '5432'),
+            'CONN_MAX_AGE': 60,  # Persistent connections for 60 seconds
+            'CONN_HEALTH_CHECKS': True,  # Check connection health
+            'OPTIONS': {
+                'connect_timeout': 10,
+                'options': '-c statement_timeout=30000',  # 30 second query timeout
+            },
+        }
     }
-}
+else:
+    # Local SQLite for development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -199,6 +221,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

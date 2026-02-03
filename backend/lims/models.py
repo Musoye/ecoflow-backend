@@ -74,6 +74,7 @@ class Alert(models.Model):
         OPEN = 'OPEN', 'Open'
         CLOSED = 'CLOSED', 'Closed'
 
+    camera = models.ForeignKey(Camera, on_delete=models.CASCADE, related_name='alerts', null=True)
     heading = models.CharField(max_length=255)
     sub_heading = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.OPEN)
@@ -99,7 +100,13 @@ class Notification(models.Model):
 class CarbonLog(models.Model):
     zone = models.ForeignKey(Zone, on_delete=models.CASCADE, related_name='carbon_logs')
     saved_amount = models.FloatField(help_text="Amount of Carbon saved (kg/g)")
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)  # Add index for faster sorting
+
+    class Meta:
+        ordering = ['-timestamp']  # Default ordering for queries
+        indexes = [
+            models.Index(fields=['-timestamp', 'zone']),  # Composite index for common queries
+        ]
 
     def __str__(self):
         return f"{self.zone.name} - {self.saved_amount} saved"

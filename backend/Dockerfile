@@ -33,5 +33,18 @@ COPY . /app/
 EXPOSE 8000
 
 # 9. Define the command to run the application using Gunicorn
-# CMD gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 0 kazlat.wsgi:application
-CMD python manage.py migrate && gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 300 kazlat.wsgi:application
+# Automatically run migrations on container startup, then start Gunicorn
+# Optimized for Cloud Run: 2 workers, 4 threads each, worker class gthread for better I/O
+CMD python manage.py migrate --noinput && \
+    python manage.py collectstatic --noinput && \
+    gunicorn --bind 0.0.0.0:$PORT \
+    --workers 2 \
+    --threads 4 \
+    --worker-class gthread \
+    --worker-tmp-dir /dev/shm \
+    --timeout 300 \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --access-logfile - \
+    --error-logfile - \
+    kazlat.wsgi:application

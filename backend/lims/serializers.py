@@ -104,7 +104,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         cameras = SimpleCameraSerializer(many=True, read_only=True)
         class Meta:
             model = Zone
-            fields = ['id', 'name', 'zone_type', 'cameras']
+            fields = ['id', 'name', 'zone_type', 'capacity', 'cameras']
 
     zones = ZoneWithCamerasSerializer(many=True, read_only=True)
 

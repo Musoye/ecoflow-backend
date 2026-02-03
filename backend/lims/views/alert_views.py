@@ -1,5 +1,5 @@
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -7,7 +7,7 @@ from ..models import Alert
 from ..serializers import AlertSerializer
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])  # Or AllowAny, depending on your needs
+@permission_classes([AllowAny])  # Or AllowAny, depending on your needs
 def alert_list_create(request):
     
     # --- GET: List all alerts ---
@@ -33,7 +33,7 @@ def alert_list_create(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def alert_detail(request, pk):
     alert = get_object_or_404(Alert, pk=pk)
 
