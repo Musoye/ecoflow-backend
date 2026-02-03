@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from ..models import Alert
+from ..models import Alert, Camera
 from ..serializers import AlertSerializer
 
 @api_view(['GET', 'POST'])
@@ -14,8 +14,14 @@ def alert_list_create(request):
     if request.method == 'GET':
         # Optional: Filter by status (e.g., /api/alerts/?status=OPEN)
         status_param = request.query_params.get('status')
+        org_param = request.query_params.get('org_id')
+
+        camera_filter = Camera.objects.filter(organization_id=org_param).values_list('id', flat=True) if org_param else None
+
+        if status_param and org_param:
+            alerts = Alert.objects.filter(status=status_param, camera_id__in=camera_filter).order_by('-created_at')
         
-        if status_param:
+        elif status_param:
             alerts = Alert.objects.filter(status=status_param).order_by('-created_at')
         else:
             alerts = Alert.objects.all().order_by('-created_at')

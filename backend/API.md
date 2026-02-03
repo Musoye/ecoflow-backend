@@ -405,7 +405,7 @@ Here is the complete API documentation for the **Alerts**, **Notifications**, an
 **GET /alerts/**
 Retrieves a list of all alerts. You can filter by status using query parameters.
 
-* **Query Params:** `?status=OPEN` or `?status=CLOSED`
+* **Query Params:** `?status=OPEN` or `?status=CLOSED` or `?org_id=organization_id`
 * **Response:**
 ```json
 [
