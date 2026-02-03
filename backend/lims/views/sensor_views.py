@@ -1,3 +1,4 @@
+from django.views.decorators.csrf import csrf_exempt
 import requests
 import google.generativeai as genai
 from django.conf import settings
@@ -16,6 +17,7 @@ CROWD_PREDICT_URL = "https://ecoflow-detector-490388308724.us-central1.run.app/p
 # Configure Gemini
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def sensor_detect(request):

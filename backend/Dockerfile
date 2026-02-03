@@ -33,4 +33,5 @@ COPY . /app/
 EXPOSE 8000
 
 # 9. Define the command to run the application using Gunicorn
-CMD gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 0 kazlat.wsgi:application
+# CMD gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 0 kazlat.wsgi:application
+CMD python manage.py migrate && gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 300 kazlat.wsgi:application
